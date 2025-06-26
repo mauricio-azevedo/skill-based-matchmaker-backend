@@ -12,28 +12,33 @@ model User {
   id       String        @id @default(uuid())
   email    String        @unique
   password String
+
   members  GroupMember[]
 }
 
 model Group {
-  id         String        @id @default(uuid())
+  id         String @id @default(uuid())
   name       String
-  inviteCode String        @unique
+  inviteCode String @unique
   createdBy  String
-  createdAt  DateTime      @default(now())
-  members    GroupMember[]
-  players    Player[]
-  rounds     Round[]
+
+  members       GroupMember[]
+  players       Player[]
+  rounds        Round[]
+  PlayerPartner PlayerPartner[]
+
+  createdAt DateTime @default(now())
 }
 
 /**
  * ─────────── MEMBRO ───────────
  */
 model GroupMember {
-  userId  String
+  role Role
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
   groupId String
-  role    Role
-  user    User   @relation(fields: [userId], references: [id])
   group   Group  @relation(fields: [groupId], references: [id])
 
   @@id([userId, groupId])
@@ -50,12 +55,16 @@ enum Role {
  */
 model Player {
   id         String  @id @default(uuid())
-  groupId    String
-  group      Group   @relation(fields: [groupId], references: [id])
   name       String
   level      Int
   active     Boolean @default(true)
   matchCount Int     @default(0)
+
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id])
+
+  partnerLinks     PlayerPartner[] @relation("PP_player")
+  partnerLinksAsTo PlayerPartner[] @relation("PP_partner")
 
   @@unique([id, groupId])
 }
@@ -64,12 +73,14 @@ model Player {
  * ─────────── ROUND ───────────
  */
 model Round {
-  id          String   @id @default(uuid())
-  groupId     String
-  group       Group    @relation(fields: [groupId], references: [id])
+  id          String @id @default(uuid())
   roundNumber Int
-  createdAt   DateTime @default(now())
-  matches     Match[]
+
+  matches Match[]
+  groupId String
+  group   Group  @relation(fields: [groupId], references: [id])
+
+  createdAt DateTime @default(now())
 
   @@unique([groupId, roundNumber])
 }
@@ -79,8 +90,6 @@ model Round {
  */
 model Match {
   id      String @id @default(uuid())
-  roundId String
-  round   Round  @relation(fields: [roundId], references: [id])
   teamA1  String
   teamA2  String
   teamB1  String
@@ -88,5 +97,22 @@ model Match {
   gamesA  Int?
   gamesB  Int?
 
+  roundId String
+  round Round @relation(fields: [roundId], references: [id])
+
   @@index([roundId])
+}
+
+model PlayerPartner {
+  count     Int    @default(0)
+
+  playerId  String
+  player  Player @relation("PP_player", fields: [playerId], references: [id])
+  partnerId String
+  partner Player @relation("PP_partner", fields: [partnerId], references: [id])
+  groupId   String
+  group   Group  @relation(fields: [groupId], references: [id])
+
+  @@id([playerId, partnerId])
+  @@index([groupId, playerId])
 }

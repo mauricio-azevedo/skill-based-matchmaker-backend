@@ -7,5 +7,6 @@ import { GroupsModule } from '@/groups/groups.module';
   imports: [GroupsModule],
   providers: [PlayersService],
   controllers: [PlayersController],
+  exports: [PlayersService],
 })
 export class PlayersModule {}

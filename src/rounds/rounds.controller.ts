@@ -14,11 +14,13 @@ export class RoundsController {
   ) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard, GroupGuard)
   list(@CurrentGroup() groupId: string) {
     return this.rounds.list(groupId);
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard, GroupGuard)
   async create(
     @CurrentGroup() groupId: string,
     @Body() body: { matches: any[] } // front envia times e níveis
@@ -29,6 +31,7 @@ export class RoundsController {
   }
 
   @Patch('matches/:id/score')
+  @UseGuards(JwtAuthGuard, GroupGuard)
   async score(
     @CurrentGroup() groupId: string,
     @Param('id') id: string,
@@ -40,6 +43,7 @@ export class RoundsController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, GroupGuard)
   async remove(@CurrentGroup() groupId: string, @Param('id') id: string) {
     await this.rounds.delete(id, groupId);
     this.gateway.emitRoundDeleted(groupId, id);

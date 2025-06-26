@@ -5,8 +5,6 @@ import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
-import { APP_GUARD } from '@nestjs/core';
-import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { PingGateway } from '@/gateway/ping.gateway';
 import { GroupsModule } from './groups/groups.module';
 import { PlayersModule } from './players/players.module';
@@ -24,6 +22,6 @@ import { RoundsModule } from './rounds/rounds.module';
     RoundsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }, PingGateway],
+  providers: [AppService, PingGateway],
 })
 export class AppModule {}

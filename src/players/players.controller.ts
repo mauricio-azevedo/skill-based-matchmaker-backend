@@ -12,16 +12,19 @@ export class PlayersController {
   constructor(private players: PlayersService) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard, GroupGuard)
   list(@CurrentGroup() groupId: string) {
     return this.players.list(groupId);
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard, GroupGuard)
   create(@CurrentGroup() groupId: string, @CurrentUser() _user: User, @Body() body: { name: string; level: number }) {
     return this.players.create(groupId, body);
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard, GroupGuard)
   update(
     @Param('id') id: string,
     @CurrentGroup() groupId: string,
@@ -31,6 +34,7 @@ export class PlayersController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, GroupGuard)
   remove(@Param('id') id: string, @CurrentGroup() groupId: string) {
     return this.players.remove(id, groupId);
   }

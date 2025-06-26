@@ -9,6 +9,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { PingGateway } from '@/gateway/ping.gateway';
 import { GroupsModule } from './groups/groups.module';
+import { PlayersModule } from './players/players.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { GroupsModule } from './groups/groups.module';
     AuthModule,
     GroupsModule,
     GroupsModule,
+    PlayersModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }, PingGateway],

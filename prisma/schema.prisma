@@ -9,7 +9,78 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(uuid())
-  email    String @unique
+  id       String        @id @default(uuid())
+  email    String        @unique
   password String
+  members  GroupMember[]
+}
+
+model Group {
+  id         String        @id @default(uuid())
+  name       String
+  inviteCode String        @unique
+  createdBy  String
+  createdAt  DateTime      @default(now())
+  members    GroupMember[]
+  players    Player[]
+  rounds     Round[]
+}
+
+/**
+ * ─────────── MEMBRO ───────────
+ */
+model GroupMember {
+  userId  String
+  groupId String
+  role    Role
+  user    User   @relation(fields: [userId], references: [id])
+  group   Group  @relation(fields: [groupId], references: [id])
+
+  @@id([userId, groupId])
+}
+
+enum Role {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+/**
+ * ─────────── PLAYER (placeholder) ───────────
+ */
+model Player {
+  id         String  @id @default(uuid())
+  groupId    String
+  group      Group   @relation(fields: [groupId], references: [id])
+  name       String
+  level      Int
+  active     Boolean @default(true)
+  matchCount Int     @default(0)
+}
+
+/**
+ * ─────────── ROUND ───────────
+ */
+model Round {
+  id          String   @id @default(uuid())
+  groupId     String
+  group       Group    @relation(fields: [groupId], references: [id])
+  roundNumber Int
+  createdAt   DateTime @default(now())
+  matches     Match[]
+}
+
+/**
+ * ─────────── MATCH (placeholder) ───────────
+ */
+model Match {
+  id      String @id @default(uuid())
+  roundId String
+  round   Round  @relation(fields: [roundId], references: [id])
+  teamA1  String
+  teamA2  String
+  teamB1  String
+  teamB2  String
+  gamesA  Int?
+  gamesB  Int?
 }

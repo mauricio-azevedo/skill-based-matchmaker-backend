@@ -56,6 +56,8 @@ model Player {
   level      Int
   active     Boolean @default(true)
   matchCount Int     @default(0)
+
+  @@unique([id, groupId])
 }
 
 /**

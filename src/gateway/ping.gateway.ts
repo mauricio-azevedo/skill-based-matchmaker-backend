@@ -8,7 +8,11 @@ import { UseGuards } from '@nestjs/common';
 export class PingGateway implements OnGatewayConnection {
   @WebSocketServer() server: Server;
 
-  handleConnection(client: Socket) {
+  async handleConnection(client: Socket) {
+    // requisitar que front envie groupId no auth handshake
+    const { groupId } = client.handshake.auth;
+    if (groupId) await client.join(`group:${groupId}`);
+
     // Se chegou aqui, o guard aprovou o token
     client.emit('auth_ok', { msg: 'WebSocket protegido passou.' });
   }

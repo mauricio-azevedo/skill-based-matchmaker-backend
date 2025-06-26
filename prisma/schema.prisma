@@ -70,6 +70,8 @@ model Round {
   roundNumber Int
   createdAt   DateTime @default(now())
   matches     Match[]
+
+  @@unique([groupId, roundNumber])
 }
 
 /**
@@ -85,4 +87,6 @@ model Match {
   teamB2  String
   gamesA  Int?
   gamesB  Int?
+
+  @@index([roundId])
 }

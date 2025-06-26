@@ -10,6 +10,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { PingGateway } from '@/gateway/ping.gateway';
 import { GroupsModule } from './groups/groups.module';
 import { PlayersModule } from './players/players.module';
+import { RoundsModule } from './rounds/rounds.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { PlayersModule } from './players/players.module';
     GroupsModule,
     GroupsModule,
     PlayersModule,
+    RoundsModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }, PingGateway],

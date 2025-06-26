@@ -1,20 +1,9 @@
-export interface Player {
-  id: string;
-  name: string;
-  level: number; // 1..N – maior = melhor
-  active: boolean;
-  /** Quantas partidas já jogou */
-  matchCount: number;
-  /** Histórico de parcerias: parceiroId → vezes jogadas juntos */
-  partnerCounts: Record<string, number>;
-  /** Lista de jogadores com quem esse jogador prefere fazr dupla */
-  preferredPairs: string[];
-}
+import { AlgoPlayer } from '@/common/interfaces/algo-player';
 
 export interface Match {
   id: string;
-  teamA: Player[];
-  teamB: Player[];
+  teamA: AlgoPlayer[];
+  teamB: AlgoPlayer[];
   gamesA: number | null;
   gamesB: number | null;
   winner: 'A' | 'B' | null;
@@ -62,19 +51,19 @@ function generateIndexPairs(count: number): IdxPair[] {
 }
 
 /** Atalho para obter `partnerCounts[id]` devolvendo 0 se inexistente. */
-function getPartnerCount(p: Player, partnerId: string): number {
+function getPartnerCount(p: AlgoPlayer, partnerId: string): number {
   return (p.partnerCounts && p.partnerCounts[partnerId]) || 0;
 }
 
 /** Pré‑processa players para lookup O(1) em pares preferidos. */
-function buildPreferredSet(players: readonly Player[]): ReadonlyArray<Set<string>> {
+function buildPreferredSet(players: readonly AlgoPlayer[]): ReadonlyArray<Set<string>> {
   return players.map((p) => new Set(p.preferredPairs ?? []));
 }
 
 /* ────────────────────── Cálculo do score normalizado ─────────────────────── */
 
 function calculateMatchScore(
-  players: readonly Player[],
+  players: readonly AlgoPlayer[],
   prefSets: ReadonlyArray<Set<string>>,
   a1: number,
   a2: number,
@@ -126,7 +115,7 @@ function calculateMatchScore(
 /* ──────────────────────── Construção de partidas ─────────────────────────── */
 
 /** Constrói todas as partidas possíveis (duas duplas disjuntas). O(n²·m) onde m≈n². */
-function generateAllMatches(players: readonly Player[]): InternalMatch[] {
+function generateAllMatches(players: readonly AlgoPlayer[]): InternalMatch[] {
   const prefSets = buildPreferredSet(players);
   const pairs = generateIndexPairs(players.length);
 
@@ -181,7 +170,7 @@ function selectTopMatches(matches: InternalMatch[], courts: number): InternalMat
 
 /* ─────────────────────────── API pública ─────────────────────────────────── */
 
-export function generateSchedule(players: readonly Player[], courts: number): UnsavedRound {
+export function generateSchedule(players: readonly AlgoPlayer[], courts: number): UnsavedRound {
   if (players.length < MIN_PLAYERS) {
     throw new Error(`É preciso ao menos ${MIN_PLAYERS} jogadores para gerar o cronograma.`);
   }
